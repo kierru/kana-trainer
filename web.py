@@ -1,5 +1,6 @@
 import streamlit as st
 import random
+import time
 
 # ================== KANA DATA ==================
 HIRAGANA = {
@@ -98,7 +99,7 @@ st.markdown("""
     height: 155px;
 
     display: flex;
-    flex-direction: column;   /* ⬅️ stack vertically */
+    flex-direction: column;
     align-items: center;
     justify-content: center;
 
@@ -106,17 +107,22 @@ st.markdown("""
 }
 
 .kana-main {
-    display: block;           /* ⬅️ force new line */
+    display: block;
     font-size: 64px;
     line-height: 1;
     transform: translateY(-4px);
 }
 
 .kana-label {
-    display: block;           /* ⬅️ force under */
+    display: block;
     font-size: 20px;
     opacity: 0.6;
     margin-top: 6px;
+}
+
+/* FIX: disable browser memory */
+input {
+    autocomplete: off !important;
 }
 </style>
 """, unsafe_allow_html=True)
@@ -134,6 +140,7 @@ if "started" not in st.session_state:
     st.session_state.current = None
     st.session_state.feedback = ""
     st.session_state.mode = ""
+    st.session_state.input_key = 0   # FIX
 
 # ================== START ==================
 if not st.session_state.started:
@@ -149,6 +156,7 @@ if not st.session_state.started:
         st.session_state.score = 0
         st.session_state.current = random.choice(st.session_state.kana_items)
         st.session_state.feedback = ""
+        st.session_state.input_key += 1  # FIX
         st.rerun()
 
 # ================== QUIZ ==================
@@ -182,14 +190,17 @@ else:
                 unsafe_allow_html=True
             )
 
-
         # ---------- RIGHT: INPUT / FEEDBACK ----------
         with col_right:
 
             # ===== STATE 1: ANSWERING =====
             if not st.session_state.feedback:
                 with st.form("answer_form"):
-                    answer = st.text_input("Romaji")
+                    answer = st.text_input(
+                        "Romaji",
+                        key=f"answer_{st.session_state.input_key}",  # FIX
+                        autocomplete="off"                           # FIX
+                    )
                     submit = st.form_submit_button("Submit")
 
                 if submit:
@@ -198,17 +209,18 @@ else:
                         st.session_state.feedback = "✔ Correct"
                     else:
                         st.session_state.feedback = f"✘ Correct: {a}"
+
+                    st.session_state.input_key += 1  # FIX
                     st.rerun()
 
             # ===== STATE 2: FEEDBACK =====
             else:
                 st.info(st.session_state.feedback)
 
-                with st.form("next_form"):
-                    next_btn = st.form_submit_button("Next")
+                time.sleep(1)
 
-                if next_btn:
-                    st.session_state.index += 1
-                    st.session_state.current = random.choice(st.session_state.kana_items)
-                    st.session_state.feedback = ""
-                    st.rerun()
+                st.session_state.index += 1
+                st.session_state.current = random.choice(st.session_state.kana_items)
+                st.session_state.feedback = ""
+                st.session_state.input_key += 1
+                st.rerun()
