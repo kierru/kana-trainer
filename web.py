@@ -13,7 +13,7 @@ HIRAGANA = {
     "ま":"ma","み":"mi","む":"mu","め":"me","も":"mo",
     "や":"ya","ゆ":"yu","よ":"yo",
     "ら":"ra","り":"ri","る":"ru","れ":"re","ろ":"ro",
-    "わ":"wa","を":"o","ん":"n",
+    "わ":"wa","を":"wo","ん":"n",
 }
 
 KATAKANA = {
@@ -26,7 +26,7 @@ KATAKANA = {
     "マ":"ma","ミ":"mi","ム":"mu","メ":"me","モ":"mo",
     "ヤ":"ya","ユ":"yu","ヨ":"yo",
     "ラ":"ra","リ":"ri","ル":"ru","レ":"re","ロ":"ro",
-    "ワ":"wa","ヲ":"o","ン":"n",
+    "ワ":"wa","ヲ":"wo","ン":"n",
 }
 
 HIRAGANA_DAKUON = {
@@ -244,4 +244,5 @@ else:
                 st.session_state.current = random.choice(st.session_state.kana_items)
                 st.session_state.feedback = ""
                 st.session_state.input_key += 1
+
                 st.rerun()
